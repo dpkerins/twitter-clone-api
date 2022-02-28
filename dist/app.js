@@ -54,3 +54,28 @@ app.post('/users/', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     });
     res.json(newUser);
 }));
+app.post('/sessions/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const sessionId = () => {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    };
+    const body = req.body;
+    const user = yield prisma.user.findUnique({
+        where: {
+            email: body.email,
+        },
+    });
+    if (user && user.password == body.password) {
+        const data = {
+            sessionId: sessionId(),
+            user: {
+                connect: {
+                    id: parseInt(user.id)
+                }
+            }
+        };
+        const newSession = yield prisma.session.create({
+            data: data
+        });
+        res.json(newSession);
+    }
+}));

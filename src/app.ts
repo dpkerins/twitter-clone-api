@@ -25,10 +25,10 @@ app.post('/tweets/', async (req: Request, res: Response) => {
   const data = {
     content: body.content,
     author: {
-      connect: {
-          id: parseInt(body.userId)
-        }
+    connect: {
+        id: parseInt(body.userId)
       }
+    }
     };
   const newTweet = await prisma.tweet.create({
     data: data
@@ -47,4 +47,30 @@ app.post('/users/', async (req: Request, res: Response) => {
     data: data
   });
   res.json(newUser);
+})
+
+app.post('/sessions/', async (req: Request, res: Response) => {
+  const sessionId = () => {
+    return '_' + Math.random().toString(36).substr(2, 9);
+  };
+  const body = req.body;
+  const user = await prisma.user.findUnique({
+    where: {
+      email: body.email,
+    },
+  })
+  if (user && user.password == body.password) {
+    const data = {
+      sessionId: sessionId(),
+      user: {
+      connect: {
+          id: parseInt(user.id)
+        }
+      }
+    };
+    const newSession = await prisma.session.create({
+      data: data
+    });
+    res.json(newSession);
+  }
 })
