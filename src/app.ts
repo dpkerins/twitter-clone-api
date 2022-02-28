@@ -6,6 +6,11 @@ const app: Application = express();
 
 app.use(express.json());
 
+
+app.listen(5000, () => {
+  console.log('Server is running');
+})
+
 app.get('/', (req: Request, res: Response) => {
   res.send('This is a different message.');
 });
@@ -28,9 +33,18 @@ app.post('/tweets/', async (req: Request, res: Response) => {
   const newTweet = await prisma.tweet.create({
     data: data
   });
-  res.json(newTweet)
+  res.json(newTweet);
 })
 
-app.listen(5000, () => {
-  console.log('Server is running');
+app.post('/users/', async (req: Request, res: Response) => {
+  const body = req.body;
+  const data = {
+    email: body.email,
+    name: body.name,
+    password: body.password
+  };
+  const newUser = await prisma.user.create({
+    data: data
+  });
+  res.json(newUser);
 })

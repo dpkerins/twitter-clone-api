@@ -17,6 +17,9 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.listen(5000, () => {
+    console.log('Server is running');
+});
 app.get('/', (req, res) => {
     res.send('This is a different message.');
 });
@@ -27,7 +30,6 @@ app.get('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 app.post('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = req.body;
     const data = {
-        title: 'guy',
         content: body.content,
         author: {
             connect: {
@@ -40,6 +42,15 @@ app.post('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     });
     res.json(newTweet);
 }));
-app.listen(5000, () => {
-    console.log('Server is running');
-});
+app.post('/users/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    const data = {
+        email: body.email,
+        name: body.name,
+        password: body.password
+    };
+    const newUser = yield prisma.user.create({
+        data: data
+    });
+    res.json(newUser);
+}));
