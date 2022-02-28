@@ -18,7 +18,6 @@ app.get('/tweets/', async (req: Request, res: Response) => {
 app.post('/tweets/', async (req: Request, res: Response) => {
   const body = req.body;
   const data = {
-    title: 'guy',
     content: body.content,
     author: {
       connect: {
