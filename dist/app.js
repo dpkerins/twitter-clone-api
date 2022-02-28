@@ -16,13 +16,29 @@ const express_1 = __importDefault(require("express"));
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 app.get('/', (req, res) => {
     res.send('This is a different message.');
 });
 app.get('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tweets = yield prisma.tweet.findMany();
     res.json(tweets);
-    // res.send('This is a tweet message.');
+}));
+app.post('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    const data = {
+        title: 'guy',
+        content: body.content,
+        author: {
+            connect: {
+                id: parseInt(body.userId)
+            }
+        }
+    };
+    const newTweet = yield prisma.tweet.create({
+        data: data
+    });
+    res.json(newTweet);
 }));
 app.listen(5000, () => {
     console.log('Server is running');
