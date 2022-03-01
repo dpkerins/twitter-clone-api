@@ -36,6 +36,26 @@ app.post('/tweets/', async (req: Request, res: Response) => {
   res.json(newTweet);
 })
 
+app.put('/likes/', async (req: Request, res: Response) => {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  console.log(authHeader[0]);
+  console.log(token);
+  // const body = req.body;
+  // const data = {
+  //   content: body.content,
+  //   author: {
+  //   connect: {
+  //       id: parseInt(body.userId)
+  //     }
+  //   }
+  //   };
+  // const newTweet = await prisma.tweet.create({
+  //   data: data
+  // });
+  // res.json(newTweet);
+})
+
 app.post('/users/', async (req: Request, res: Response) => {
   const body = req.body;
   const data = {
