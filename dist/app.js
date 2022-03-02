@@ -24,7 +24,11 @@ app.get('/', (req, res) => {
     res.send('This is a different message.');
 });
 app.get('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tweets = yield prisma.tweet.findMany();
+    const tweets = yield prisma.tweet.findMany({
+        include: {
+            likes: true
+        }
+    });
     res.json(tweets);
 }));
 app.post('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,24 +46,34 @@ app.post('/tweets/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     });
     res.json(newTweet);
 }));
-app.put('/likes/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.put('/tweets/:tweet_id/likes/:user_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    console.log(authHeader[0]);
-    console.log(token);
-    // const body = req.body;
-    // const data = {
-    //   content: body.content,
-    //   author: {
-    //   connect: {
-    //       id: parseInt(body.userId)
-    //     }
-    //   }
-    //   };
-    // const newTweet = await prisma.tweet.create({
-    //   data: data
-    // });
-    // res.json(newTweet);
+    const token = authHeader && authHeader.split(' ')[1].split('=')[1];
+    const tokenVerify = yield prisma.session.findUnique({
+        where: {
+            sessionId: token
+        }
+    });
+    if (token == tokenVerify.sessionId) {
+        const tweetId = req.params.tweet_id;
+        const userId = req.params.user_id;
+        const data = {
+            user: {
+                connect: {
+                    id: parseInt(userId)
+                }
+            },
+            tweet: {
+                connect: {
+                    id: parseInt(tweetId)
+                }
+            },
+        };
+        const newLike = yield prisma.like.create({
+            data: data
+        });
+        res.json(newLike);
+    }
 }));
 app.post('/users/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = req.body;
