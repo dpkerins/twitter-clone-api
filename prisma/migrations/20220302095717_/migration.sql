@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Like" ALTER COLUMN "id" DROP DEFAULT;
+DROP SEQUENCE "Like_id_seq";
